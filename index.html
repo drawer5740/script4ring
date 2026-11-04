@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Script4Ring is a small, client-side webring navigator.">
+  <title>Script4Ring</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171717;
+      --muted: #5c5c5c;
+      --line: #c9c9c4;
+      --paper: #f7f7f3;
+      --surface: #fff;
+      --accent: #174f43;
+      --accent-hover: #103b32;
+      --code: #eeeeea;
+      --focus: #215fba;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Verdana, Geneva, sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    main {
+      width: min(820px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 54px 0 72px;
+    }
+    h1, h2, h3 {
+      font-family: Verdana, Geneva, sans-serif;
+      line-height: 1.25;
+      letter-spacing: -0.035em;
+    }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; }
+    h2 {
+      margin: 42px 0 12px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid var(--line);
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+    h3 { margin: 24px 0 8px; font-size: 1rem; font-weight: 700; letter-spacing: 0; }
+    p { margin: 0 0 14px; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { color: var(--accent-hover); }
+    .intro { max-width: 690px; margin-bottom: 28px; color: #333; font-size: 1.03rem; }
+    .section-note { max-width: 700px; color: var(--muted); }
+    .code-wrap { position: relative; margin: 14px 0 18px; border: 1px solid var(--line); background: var(--surface); }
+    pre {
+      overflow-wrap: anywhere;
+      margin: 0;
+      padding: 19px 18px;
+      background: var(--code);
+      color: #202020;
+      font-family: Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      tab-size: 2;
+      white-space: pre-wrap;
+    }
+    code { font-family: Consolas, "Liberation Mono", monospace; font-size: 0.93em; }
+    .copy-button, .download-button {
+      display: inline-block;
+      min-height: 36px;
+      padding: 7px 12px;
+      border: 1px solid var(--ink);
+      border-radius: 2px;
+      background: var(--surface);
+      color: var(--ink);
+      font-family: Verdana, Geneva, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .copy-button {
+      float: right;
+      position: relative;
+      z-index: 1;
+      margin: 0 0 8px 12px;
+    }
+    .copy-button:hover, .download-button:hover { background: var(--ink); color: #fff; }
+    button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; }
+    .action-list {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 8px 18px;
+      max-width: 680px;
+      margin: 15px 0 0;
+    }
+    .action-list dt { font-family: Consolas, "Liberation Mono", monospace; font-size: 13px; font-weight: 700; }
+    .action-list dd { margin: 0; color: #444; }
+    .self-host { margin-top: 42px; border: 1px solid var(--line); background: var(--surface); }
+    .self-host summary { padding: 14px 16px; cursor: pointer; font-weight: 700; list-style-position: inside; }
+    .self-host[open] summary { border-bottom: 1px solid var(--line); }
+    .self-host-content { padding: 16px; }
+    .license { margin-top: 28px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 560px) {
+      main { width: min(100% - 28px, 820px); padding-top: 34px; }
+      pre { padding: 15px 14px; }
+      .action-list { grid-template-columns: 1fr; gap: 2px; }
+      .action-list dd { margin-bottom: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Script4Ring</h1>
+    <p class="intro">
+      Script4Ring is a small, client-side webring navigator. Add one script tag
+      to your site, list the ring members as slug/domain pairs, and link to the
+      next, previous, or a random member.
+    </p>
+
+    <h2>1. Add Script4Ring</h2>
+    <p>
+      Put this tag in your HTML. Replace the example script URL with the address
+      where <code>main.js</code> is hosted. Add every member as a slug followed
+      by a domain in <code>data-members</code>.
+    </p>
+    <div class="code-wrap">
+      <pre><button class="copy-button" type="button" data-copy="install-code">Copy</button><code id="install-code">&lt;script
+  src="https://example.com/main.js"
+  id="script4link"
+  data-members="SLUG123 hi.neocities.org
+DrAWER drawer5740.neocities.org
+LookAtMeIHaveATLD hi.com
+hi hi.hihihihi.net
+grok grok.neocities.org"
+  defer&gt;&lt;/script&gt;</code></pre>
+    </div>
+    <p class="section-note">
+      The member list is split on whitespace, so spaces, tabs, and line breaks
+      all work. Each pair is <code>slug domain</code>. Slugs may contain only
+      English letters and numbers.
+    </p>
+
+    <h2>2. Add navigation links</h2>
+    <p>
+      Use your own slug in the Next and Previous links. It must match the slug
+      assigned to your domain in <code>data-members</code>.
+    </p>
+    <div class="code-wrap">
+      <pre><button class="copy-button" type="button" data-copy="links-code">Copy</button><code id="links-code">&lt;a href="?SLUG123-next"&gt;Next&lt;/a&gt;
+&lt;a href="?SLUG123-previous"&gt;Previous&lt;/a&gt;
+&lt;a href="?random"&gt;Random&lt;/a&gt;</code></pre>
+    </div>
+
+    <h3>URL options</h3>
+    <dl class="action-list">
+      <dt>?random</dt><dd>Go to a random member.</dd>
+      <dt>?s4r=random</dt><dd>The same random action, useful alongside other query parameters.</dd>
+      <dt>?SLUG123-next</dt><dd>Go to the member after SLUG123.</dd>
+      <dt>?SLUG123-previous</dt><dd>Go to the member before SLUG123.</dd>
+      <dt>?s4r=SLUG123-next</dt><dd>Next, using the named parameter.</dd>
+      <dt>?s4r=SLUG123-previous</dt><dd>Previous, using the named parameter.</dd>
+    </dl>
+
+    <h3>When your URL already has parameters</h3>
+    <p>Use <code>&amp;s4r=</code> to add Script4Ring without replacing the existing query string.</p>
+    <div class="code-wrap">
+      <pre><button class="copy-button" type="button" data-copy="query-code">Copy</button><code id="query-code">&lt;a href="?page=home&amp;s4r=random"&gt;Random&lt;/a&gt;
+&lt;a href="?page=home&amp;s4r=SLUG123-next"&gt;Next&lt;/a&gt;</code></pre>
+    </div>
+
+    <h2>How it works</h2>
+    <p>
+      The script reads the <code>data-members</code> attribute from the
+      <code>script4link</code> tag. It pairs each slug with the domain immediately
+      after it. Next and Previous follow the order in the list and wrap around
+      at either end. Random avoids the current domain when another member is
+      available.
+    </p>
+
+    <details class="self-host">
+      <summary>Self-hosting</summary>
+      <div class="self-host-content">
+        <p>
+          Download <code>main.js</code> and upload it to your own website.
+          For example, placing it in your site's root makes it available at
+          <code>https://yourdomain.com/main.js</code>.
+        </p>
+        <p>
+          Then change the script URL in your installation tag to your own
+          <code>main.js</code> address.
+        </p>
+        <a class="download-button" href="/main.js" download="main.js">Download main.js</a>
+      </div>
+    </details>
+
+    <p class="license">Dual-licensed under GNU GPL v3.0 or MIT, at your option.</p>
+  </main>
+
+  <script>
+    (function () {
+      function fallbackCopy(text) {
+        var area = document.createElement("textarea");
+        area.value = text;
+        area.setAttribute("readonly", "");
+        area.style.position = "fixed";
+        area.style.opacity = "0";
+        document.body.appendChild(area);
+        area.select();
+        var success = false;
+        try { success = document.execCommand("copy"); } catch (error) {}
+        document.body.removeChild(area);
+        return success;
+      }
+
+      document.querySelectorAll("[data-copy]").forEach(function (button) {
+        button.addEventListener("click", async function () {
+          var target = document.getElementById(button.getAttribute("data-copy"));
+          if (!target) return;
+          var text = target.textContent;
+          var original = button.textContent;
+          try {
+            if (navigator.clipboard && window.isSecureContext) {
+              await navigator.clipboard.writeText(text);
+            } else if (!fallbackCopy(text)) {
+              throw new Error("Clipboard copy failed");
+            }
+            button.textContent = "Copied";
+          } catch (error) {
+            button.textContent = "Copy failed";
+          }
+          window.setTimeout(function () { button.textContent = original; }, 1400);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
